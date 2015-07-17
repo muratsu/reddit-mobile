@@ -60,17 +60,22 @@ class Ad extends BaseComponent {
       srnames = ' reddit.com';
     }
 
+    var headers = {};
     var postData = {
       srnames: srnames,
       is_mobile_web: true,
     };
+
     // If user is not logged in, send the loid in the promo request
-    if (!this.props.user) {
+    if (this.props.token) {
+      headers.authorization = 'bearer ' + this.props.token;
+    } else {
       postData.loid = globals().app.state.loid;
     }
 
     return new Promise((resolve, reject) => {
       superagent.post(this.props.adsPath)
+        .set(headers)
         .type('form')
         .send(postData)
         .end(function(err, res) {
@@ -175,7 +180,7 @@ class Ad extends BaseComponent {
 Ad.propTypes = {
   afterLoad: React.PropTypes.func.isRequired,
   compact: React.PropTypes.bool.isRequired,
-  user: React.PropTypes.object,
+  token: React.PropTypes.string,
 };
 
 export default Ad;
